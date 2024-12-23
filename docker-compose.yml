@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgrespassword
+      - POSTGRES_DB=hasuradb
+      - DATABASE_URL=postgres://postgres:postgrespassword@postgres:5432/hasuradb
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgrespassword
+      - POSTGRES_DB=hasuradb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  hasura:
+    image: hasura/graphql-engine:v2.30.1
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      - HASURA_GRAPHQL_DATABASE_URL=postgres://postgres:postgrespassword@postgres:5432/hasuradb
+      - HASURA_GRAPHQL_ENABLE_CONSOLE=true
+      - HASURA_GRAPHQL_DEV_MODE=true
+      - HASURA_GRAPHQL_ENABLED_LOG_TYPES=startup, http-log, webhook-log, websocket-log, query-log
+      - HASURA_GRAPHQL_ADMIN_SECRET=myadminsecretkey
+      - HASURA_GRAPHQL_ACTION_SECRET=myactionssecret
+      - HASURA_GRAPHQL_ACTIONS_HANDLER_WEBHOOK_BASEURL=http://app:3000/hasura/actions
+      - HASURA_GRAPHQL_EVENT_WEBHOOK_HANDLER_URL=http://app:3000/hasura/events
+      - HASURA_GRAPHQL_JWT_SECRET={"type":"HS256","key":"hasura-jwt-super-secret-key-123!","claims_format":"json"}
+      - HASURA_GRAPHQL_UNAUTHORIZED_ROLE=anonymous
+      - ACTION_ADMIN_SECRET=myadminsecretkey
+      - ACTIONS_BASE_URL=http://host.docker.internal:3000
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:

@@ -1,0 +1,51 @@
+type Mutation {
+  createCollection(name: String!): CreateCollectionOutput
+  createAuthor(email: String!): CreateAuthorOutput
+  assignAuthors(
+    collection_id: Int!
+    author_ids: [Int!]!
+    is_admin: Boolean
+  ): AssignAuthorsOutput
+  addImage(
+    collection_id: Int!
+    url: String!
+    is_published: Boolean!
+    tags: [String!]
+  ): AddImageOutput
+
+  updateImage(
+    picture_id: Int!
+    is_published: Boolean
+    tags: [String!]
+  ): UpdateImageOutput
+}
+
+type AddImageOutput {
+  picture_id: Int!
+  url: String!
+  is_published: Boolean!
+  tags: [String!]!
+}
+
+type UpdateImageOutput {
+  picture_id: Int!
+  is_published: Boolean
+  tags: [String!]
+  success: Boolean!
+}
+
+type CreateAuthorOutput {
+  author_id: Int!
+  email: String!
+}
+
+type AssignAuthorsOutput {
+  collection_id: Int!
+  author_ids: [Int!]!
+  success: Boolean!
+}
+
+type CreateCollectionOutput {
+  collection_id: Int!
+  name: String!
+}

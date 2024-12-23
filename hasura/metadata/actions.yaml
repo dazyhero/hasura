@@ -1,0 +1,64 @@
+actions:
+  - name: createCollection
+    definition:
+      kind: synchronous
+      handler: "http://host.docker.internal:3000/hasura/actions/create-collection"
+      forward_client_headers: true
+      headers:
+        - name: x-hasura-admin-secret
+          value_from_env: ACTION_ADMIN_SECRET
+    permissions:
+      - role: admin
+    comment: Create a new collection (admin only)
+  - name: createAuthor
+    definition:
+      kind: synchronous
+      handler: "http://host.docker.internal:3000/hasura/actions/create-author"
+      forward_client_headers: true
+      headers:
+        - name: x-hasura-admin-secret
+          value_from_env: ACTION_ADMIN_SECRET
+    permissions:
+      - role: admin
+    comment: Create a new author (admin only)
+  - name: assignAuthors
+    definition:
+      kind: synchronous
+      handler: "http://host.docker.internal:3000/hasura/actions/assign-authors"
+      forward_client_headers: true
+      headers:
+        - name: x-hasura-admin-secret
+          value_from_env: ACTION_ADMIN_SECRET
+    permissions:
+      - role: admin
+    comment: Assign authors to a collection (admin only)
+  - name: addImage
+    definition:
+      kind: synchronous
+      handler: "http://host.docker.internal:3000/hasura/actions/add-image"
+      forward_client_headers: true
+      headers:
+        - name: x-hasura-admin-secret
+          value_from_env: ACTION_ADMIN_SECRET
+    permissions:
+      - role: admin
+      - role: author
+    comment: Add image to a collection (admin, author only)
+  - name: updateImage
+    definition:
+      kind: synchronous
+      handler: "http://host.docker.internal:3000/hasura/actions/update-image"
+      forward_client_headers: true
+      headers:
+        - name: x-hasura-admin-secret
+          value_from_env: ACTION_ADMIN_SECRET
+    permissions:
+      - role: admin
+      - role: author
+    comment: Update image status and tags (admin, author only)
+
+custom_types:
+  enums: []
+  input_objects: []
+  objects: []
+  scalars: []

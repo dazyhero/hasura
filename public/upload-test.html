@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Upload Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input[type="number"],
+      input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      #response {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Image Upload Test</h2>
+    <form id="uploadForm">
+      <div class="form-group">
+        <label for="image">Select Image:</label>
+        <input type="file" id="image" accept="image/*" required />
+      </div>
+
+      <div class="form-group">
+        <label for="collection_id">Collection ID:</label>
+        <input type="number" id="collection_id" required />
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="is_published" />
+          Is Published
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label for="tags">Tags (comma-separated):</label>
+        <input type="text" id="tags" placeholder="nature, landscape, etc" />
+      </div>
+
+      <div class="form-group">
+        <label for="admin_secret">Admin Secret:</label>
+        <input type="text" id="admin_secret" required />
+      </div>
+
+      <div class="form-group">
+        <label for="bearer_token">Bearer Token:</label>
+        <input type="text" id="bearer_token" required />
+      </div>
+
+      <button type="submit">Upload Image</button>
+    </form>
+
+    <div id="response"></div>
+
+    <script>
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData();
+          const image = document.getElementById("image").files[0];
+          const collection_id = parseInt(
+            document.getElementById("collection_id").value,
+          );
+          const is_published = document.getElementById("is_published").checked;
+          const tags = document
+            .getElementById("tags")
+            .value.split(",")
+            .map((tag) => tag.trim())
+            .filter((tag) => tag);
+          const adminSecret = document.getElementById("admin_secret").value;
+          const bearerToken = document.getElementById("bearer_token").value;
+
+          // Create the operations object
+          const operations = {
+            variables: {
+              collection_id,
+              is_published,
+              tags,
+            },
+          };
+
+          formData.append("operations", JSON.stringify(operations));
+          formData.append("image", image);
+
+          try {
+            const response = await fetch("/hasura/actions/upload-image", {
+              method: "POST",
+              headers: {
+                "x-hasura-admin-secret": adminSecret,
+                Authorization: `Bearer ${bearerToken}`,
+              },
+              body: formData,
+            });
+
+            const result = await response.json();
+            document.getElementById("response").textContent = JSON.stringify(
+              result,
+              null,
+              2,
+            );
+          } catch (error) {
+            document.getElementById("response").textContent =
+              "Error: " + error.message;
+          }
+        });
+    </script>
+  </body>
+</html>

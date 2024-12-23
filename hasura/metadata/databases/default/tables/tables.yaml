@@ -1,0 +1,123 @@
+- table:
+    schema: public
+    name: authors
+  array_relationships:
+    - name: collection_authors
+      using:
+        foreign_key_constraint_on:
+          column: author_id
+          table:
+            name: collection_authors
+            schema: public
+    - name: pictures
+      using:
+        foreign_key_constraint_on:
+          column: author_id
+          table:
+            name: pictures
+            schema: public
+
+- table:
+    schema: public
+    name: collection_authors
+  object_relationships:
+    - name: author
+      using:
+        foreign_key_constraint_on: author_id
+    - name: collection
+      using:
+        foreign_key_constraint_on: collection_id
+
+- table:
+    schema: public
+    name: collections
+  array_relationships:
+    - name: collection_authors
+      using:
+        foreign_key_constraint_on:
+          column: collection_id
+          table:
+            name: collection_authors
+            schema: public
+    - name: pictures
+      using:
+        foreign_key_constraint_on:
+          column: collection_id
+          table:
+            name: pictures
+            schema: public
+
+- table:
+    schema: public
+    name: tags
+  array_relationships:
+    - name: picture_tags
+      using:
+        foreign_key_constraint_on:
+          column: tag_id
+          table:
+            name: picture_tags
+            schema: public
+
+- table:
+    schema: public
+    name: pictures
+  object_relationships:
+    - name: author
+      using:
+        foreign_key_constraint_on: author_id
+    - name: collection
+      using:
+        foreign_key_constraint_on: collection_id
+  array_relationships:
+    - name: picture_tags
+      using:
+        foreign_key_constraint_on:
+          column: picture_id
+          table:
+            name: picture_tags
+            schema: public
+
+- table:
+    schema: public
+    name: picture_tags
+  object_relationships:
+    - name: picture
+      using:
+        foreign_key_constraint_on: picture_id
+    - name: tag
+      using:
+        foreign_key_constraint_on: tag_id
+
+- table:
+    schema: public
+    name: tags
+  array_relationships:
+    - name: picture_tags
+      using:
+        foreign_key_constraint_on:
+          column: tag_id
+          table:
+            name: picture_tags
+            schema: public
+
+- table:
+    schema: public
+    name: picture_search_view
+  object_relationships:
+    - name: author
+      using:
+        manual_configuration:
+          remote_table:
+            schema: public
+            name: authors
+          column_mapping:
+            author_id: id
+    - name: collection
+      using:
+        manual_configuration:
+          remote_table:
+            schema: public
+            name: collections
+          column_mapping:
+            collection_id: id
